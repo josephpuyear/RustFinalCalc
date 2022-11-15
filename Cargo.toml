@@ -2,7 +2,7 @@
 name = "rust_FinalProject"
 version = "0.1.0"
 authors = ["Joseph Puyear <joeypuyear@gmail.com>"]
-edition = "2022"
+edition = "2021"
 rust-version = "1.66"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
@@ -11,6 +11,9 @@ rust-version = "1.66"
 [dependencies]
 egui = "0.19.0"
 eframe = { version = "0.19.0", features = ["persistence"] }
+
+eval = "0.4.3"
+to_string = "0.1.0"
 
 # You only need serde if you want app persistence:
 serde = { version = "1", features = ["derive"] }
@@ -35,10 +38,4 @@ opt-level = 2
 
 [patch.crates-io]
 
-# If you want to use the bleeding edge version of egui and eframe:
-# egui = { git = "https://github.com/emilk/egui", branch = "master" }
-# eframe = { git = "https://github.com/emilk/egui", branch = "master" }
 
-# If you fork https://github.com/emilk/egui you can test with:
-# egui = { path = "../egui/crates/egui" }
-# eframe = { path = "../egui/crates/eframe" }
