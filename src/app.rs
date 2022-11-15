@@ -1,12 +1,13 @@
 /// We derive Deserialize/Serialize so we can persist app state on shutdown.
 #[derive(serde::Deserialize, serde::Serialize)]
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
+
 pub struct Calculator {
     // Example stuff:
     label: String,
 
     // this how you opt-out of serialization of a member
-    #[serde(skip)]
+    //#[serde(skip)]
     value: f32,
 
     display: String,
@@ -17,6 +18,7 @@ impl Default for Calculator {
         Self {
             // Example stuff:
             label: "".to_owned(),
+            value: 0.0,
             display: "".to_owned(),
         }
     }
@@ -47,7 +49,7 @@ impl eframe::App for Calculator {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, display } = self;
+        let Self { label, value, display } = self;
 
         // Examples of how to create different panels and windows.
         // Pick whichever suits you.
@@ -60,6 +62,7 @@ impl eframe::App for Calculator {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
+                        *display = " ".to_owned();
                         _frame.close();
                     }
                 }); 
@@ -87,25 +90,33 @@ impl eframe::App for Calculator {
             let three : char = '3';
 
             let zero : char = '0';
+            let dot : char = '.';
 
+
+            //Make () buttons
+            //Make % button
+            //Make it so two operations in a row don't make it crash (match case?)
+            //Resize buttons
+            //Change colors
+            
 
             ui.text_edit_singleline(display);
-
-            if ui.button("Clear").clicked() {
-                *display = " ".to_owned();
-            }
-
+            ui.with_layout(egui::Layout::top_down_justified(egui::Align::Center), |ui| {
+                if ui.button("      Clear     ").clicked() {
+                    *display = " ".to_owned()
+                }
+            });
             ui.horizontal(|ui| {
-                    if ui.button("7").clicked() { 
+                    if ui.button("  7  ").clicked() { 
                         display.push(seven);
                     }
-                    if ui.button("8").clicked() { 
+                    if ui.button("  8  ").clicked() { 
                         display.push(eight);
                     }
-                    if ui.button("9").clicked() { 
+                    if ui.button("  9  ").clicked() { 
                         display.push(nine);
                     }
-                    if ui.button("*").clicked() {
+                    if ui.button("  *  ").clicked() {
                         display.push(' ');
                         display.push(mult);
                         display.push(' ');
@@ -113,16 +124,16 @@ impl eframe::App for Calculator {
             });
 
             ui.horizontal(|ui| {
-                    if ui.button("4").clicked() { 
+                    if ui.button("  4  ").clicked() { 
                         display.push(four);
                     }
-                    if ui.button("5").clicked() { 
+                    if ui.button("  5  ").clicked() { 
                         display.push(five);
                     }
-                    if ui.button("6").clicked() { 
+                    if ui.button("  6  ").clicked() { 
                         display.push(six);
                     }
-                    if ui.button("-").clicked() {
+                    if ui.button("  -  ").clicked() {
                         display.push(' ');
                         display.push(sub);
                         display.push(' ');
@@ -130,16 +141,16 @@ impl eframe::App for Calculator {
             });
 
             ui.horizontal(|ui| {
-                if ui.button("1").clicked() { 
+                if ui.button("  1  ").clicked() { 
                     display.push(one);
                 }
-                if ui.button("2").clicked() { 
+                if ui.button("  2  ").clicked() { 
                     display.push(two);
                 }
-                if ui.button("3").clicked() { 
+                if ui.button("  3  ").clicked() { 
                     display.push(three);
                 }
-                if ui.button("+").clicked() {  
+                if ui.button("  +  ").clicked() {  
                     display.push(' ');
                     display.push(add);
                     display.push(' ');
@@ -149,13 +160,23 @@ impl eframe::App for Calculator {
         
         use eval::{eval, to_value};
         ui.horizontal(|ui|{    
-            if ui.button("0").clicked(){
+            if ui.button("  0  ").clicked(){
                 display.push(zero);
             }
 
-            if ui.button("=").clicked() {
-                let mut result = eval::eval(&*display).unwrap().as_i64().unwrap();
+            if ui.button("  =  ").clicked() {
+                let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
                 *display = result.to_string();
+            }
+            
+            if ui.button("   .   ").clicked(){
+                display.push(dot);
+            }
+
+            if ui.button("  /  ").clicked() {
+                display.push(' ');
+                display.push(div);
+                display.push(' ');
             }
         });
             egui::warn_if_debug_build(ui);

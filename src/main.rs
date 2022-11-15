@@ -12,7 +12,7 @@ fn main() {
 
     let native_options = eframe::NativeOptions::default();
     eframe::run_native(
-        "rust_calculator",
+        "Calculator in Rust - Made by Joseph Puyear",
         native_options,
         Box::new(|cc| Box::new(rust_FinalProject::Calculator::new(cc))),
     );
