@@ -131,8 +131,7 @@ impl eframe::App for Calculator {
             
         
             /* 
-            use std::{thread, time};
-            let ten_mills = time::Duration::from_millis(10);
+            
             let x = 1;
 
             if display.chars().nth(x).unwrap() == add{
@@ -141,23 +140,17 @@ impl eframe::App for Calculator {
                 thread::sleep(ten_mills);
                 *display = temp_display.to_string();
 
-
-
-            use egui::Vec2;
-            pub const X: Vec2 = Vec2{ x: 1.0, y: 0.0,};
-
-            if v[v.len()-2] == add | sub | mult | div | modd {
-                        let temp_display = display.clone();
-                        *display = "Please only type one operator at a time!".to_owned();
-                        thread::sleep(ten_mills);
-                        *display = temp_display.to_string();
-                        }
-                    }
-                    else{ //add char to screen
-                    }
-            
-            let button = ui.set_min_size(X);
             */
+
+            use std::{thread, time};
+            let ten_mills = time::Duration::from_millis(100);
+
+            use std::any::type_name;
+            fn type_of<T>(_: T) -> &'static str {
+                type_name::<T>()
+            }
+
+            let v : Vec<char> = display.chars().collect();
             
             ui.heading("Rust Calculator");
             ui.horizontal(|ui| {
@@ -247,7 +240,7 @@ impl eframe::App for Calculator {
                     display.push(' ');
                     display.push(operator.add);
                     display.push(' ');
-                }  
+                }
             });
 
         use eval::{eval, to_value};
