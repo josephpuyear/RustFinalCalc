@@ -1,9 +1,9 @@
-var cacheName = 'egui-template-pwa';
+var cacheName = 'rust-FinalProjcet';
 var filesToCache = [
   './',
   './index.html',
-  './rust_calculator.js',
-  './rust_calculator.wasm',
+  './rust_FinalProject.js',
+  './rust_FinalProject.wasm',
 ];
 
 /* Start the service worker and cache all of the app's content */
