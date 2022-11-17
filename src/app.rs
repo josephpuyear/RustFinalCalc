@@ -8,7 +8,6 @@ pub struct Calculator {
 
     // this how you opt-out of serialization of a member
     //#[serde(skip)]
-    value: f32,
 
     display: String,
 }
@@ -16,9 +15,7 @@ pub struct Calculator {
 impl Default for Calculator {
     fn default() -> Self {
         Self {
-            // Example stuff:
             label: "".to_owned(),
-            value: 0.0,
             display: "".to_owned(),
         }
     }
@@ -49,7 +46,7 @@ impl eframe::App for Calculator {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, value, display } = self;
+        let Self { label, display } = self;
 
         // Examples of how to create different panels and windows.
         // Pick whichever suits you.
@@ -68,117 +65,179 @@ impl eframe::App for Calculator {
                 }); 
             });
         });
+        
+        
 
         egui::CentralPanel::default().show(ctx, |ui| {
             // The central panel the region left after adding TopPanel's and SidePanel's
-            
-            let add : char = '+';
-            let sub : char = '-';
-            let mult : char = '*';
-            let div : char = '/';
 
+            //Numbers
+            let zero : char = '0';
+            let one : char = '1';
+            let two : char = '2';
+            let three : char = '3';
+            let four : char = '4';
+            let five : char = '5';
+            let six : char = '6';
             let seven : char = '7';
             let eight : char = '8';
             let nine : char = '9';
 
-            let four : char = '4';
-            let five : char = '5';
-            let six : char = '6';
-
-            let one : char = '1';
-            let two : char = '2';
-            let three : char = '3';
-
-            let zero : char = '0';
+            //Operators
             let dot : char = '.';
+            let modd : char = '%';
+            let add : char = '+';
+            let sub : char = '-';
+            let mult : char = '*';
+            let div : char = '/';
+            
+            //Other
+            let lparen : char = '(';
+            let rparen : char = ')';
 
-
-            //Make () buttons
-            //Make % button
             //Make it so two operations in a row don't make it crash (match case?)
+                //check by index, i.e. display[-1]? if last character an operator, then do nothing
+            //Do not allow / by 0
             //Resize buttons
             //Change colors
             
-
-            ui.text_edit_singleline(display);
-            ui.with_layout(egui::Layout::top_down_justified(egui::Align::Center), |ui| {
-                if ui.button("      Clear     ").clicked() {
-                    *display = " ".to_owned()
-                }
-            });
-            ui.horizontal(|ui| {
-                    if ui.button("  7  ").clicked() { 
-                        display.push(seven);
-                    }
-                    if ui.button("  8  ").clicked() { 
-                        display.push(eight);
-                    }
-                    if ui.button("  9  ").clicked() { 
-                        display.push(nine);
-                    }
-                    if ui.button("  *  ").clicked() {
-                        display.push(' ');
-                        display.push(mult);
-                        display.push(' ');
-                    }
-            });
-
-            ui.horizontal(|ui| {
-                    if ui.button("  4  ").clicked() { 
-                        display.push(four);
-                    }
-                    if ui.button("  5  ").clicked() { 
-                        display.push(five);
-                    }
-                    if ui.button("  6  ").clicked() { 
-                        display.push(six);
-                    }
-                    if ui.button("  -  ").clicked() {
-                        display.push(' ');
-                        display.push(sub);
-                        display.push(' ');
-                    }
-            });
-
-            ui.horizontal(|ui| {
-                if ui.button("  1  ").clicked() { 
-                    display.push(one);
-                }
-                if ui.button("  2  ").clicked() { 
-                    display.push(two);
-                }
-                if ui.button("  3  ").clicked() { 
-                    display.push(three);
-                }
-                if ui.button("  +  ").clicked() {  
-                    display.push(' ');
-                    display.push(add);
-                    display.push(' ');
-                }
-        });
-
         
-        use eval::{eval, to_value};
-        ui.horizontal(|ui|{    
-            if ui.button("  0  ").clicked(){
-                display.push(zero);
-            }
+            /* 
+            use std::{thread, time};
+            let ten_mills = time::Duration::from_millis(10);
+            let x = 1;
 
-            if ui.button("  =  ").clicked() {
+            if display.chars().nth(x).unwrap() == add{
+                let temp_display = display.clone();
+                *display = "Please only type one operator at a time!".to_owned();
+                thread::sleep(ten_mills);
+                *display = temp_display.to_string();
+
+
+
+            use egui::Vec2;
+            pub const X: Vec2 = Vec2{ x: 1.0, y: 0.0,};
+
+            if v[v.len()-2] == add | sub | mult | div | modd {
+                        let temp_display = display.clone();
+                        *display = "Please only type one operator at a time!".to_owned();
+                        thread::sleep(ten_mills);
+                        *display = temp_display.to_string();
+                        }
+                    }
+                    else{ //add char to screen
+                    }
+            
+            let button = ui.set_min_size(X);
+            */
+            
+            ui.heading("Rust Calculator");
+            ui.horizontal(|ui| {
+                ui.label("Written by Joseph Puyear");
+            });
+
+            let response = ui.text_edit_singleline(display);
+            if response.lost_focus() && ui.input().key_pressed(egui::Key::Enter) {
                 let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
                 *display = result.to_string();
             }
+
+            ui.horizontal(|ui| {
+                if ui.add_sized([140.,40.], egui::Button::new("Clear")).clicked() {
+                    *display = " ".to_owned();
+                }
+                if ui.add_sized([140.,40.], egui::Button::new("<-")).clicked() {
+                    display.pop();
+                }
+            });
+
+            ui.horizontal(|ui| {   
+                if ui.add_sized([66.,40.], egui::Button::new("(")).clicked() {
+                    display.push(lparen);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new(")")).clicked() {
+                    display.push(rparen);
+                }         
+                if ui.add_sized([66.,40.], egui::Button::new("%")).clicked() {
+                    display.push(' ');
+                    display.push(modd);
+                    display.push(' ');
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("/")).clicked() {
+                    display.push(' ');
+                    display.push(div);
+                    display.push(' ');
+                }
+                
+            });
+
+            ui.horizontal(|ui| {
+                if ui.add_sized([66.,40.], egui::Button::new("7")).clicked() { 
+                    display.push(seven);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("8")).clicked() { 
+                    display.push(eight);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("9")).clicked() { 
+                    display.push(nine);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("*")).clicked() {
+                    display.push(' ');
+                    display.push(mult);
+                    display.push(' ');
+                }
+            });
+
+            ui.horizontal(|ui| {
+                if ui.add_sized([66.,40.], egui::Button::new("4")).clicked() { 
+                    display.push(four);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("5")).clicked() { 
+                    display.push(five);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("6")).clicked() { 
+                    display.push(six);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("-")).clicked() {
+                    display.push(' ');
+                    display.push(sub);
+                    display.push(' ');
+                }
+            });
+
+            ui.horizontal(|ui| {
+                if ui.add_sized([66.,40.], egui::Button::new("1")).clicked() { 
+                    display.push(one);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("2")).clicked() { 
+                    display.push(two);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("3")).clicked() { 
+                    display.push(three);
+                }
+                if ui.add_sized([66.,40.], egui::Button::new("+")).clicked() {
+                    display.push(' ');
+                    display.push(add);
+                    display.push(' ');
+                }  
+            });
+
+        use eval::{eval, to_value};
+        ui.horizontal(|ui|{  
+            if ui.add_sized([140.,40.], egui::Button::new("0")).clicked(){
+                display.push(zero);
+            }
             
-            if ui.button("   .   ").clicked(){
+            if ui.add_sized([66.,40.], egui::Button::new(".")).clicked(){
                 display.push(dot);
             }
 
-            if ui.button("  /  ").clicked() {
-                display.push(' ');
-                display.push(div);
-                display.push(' ');
+            if ui.add_sized([66.,40.], egui::Button::new("=")).clicked() {
+                let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
+                *display = result.to_string();
             }
         });
+
             egui::warn_if_debug_build(ui);
         });
 
