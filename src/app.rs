@@ -72,28 +72,56 @@ impl eframe::App for Calculator {
             // The central panel the region left after adding TopPanel's and SidePanel's
 
             //Numbers
-            let zero : char = '0';
-            let one : char = '1';
-            let two : char = '2';
-            let three : char = '3';
-            let four : char = '4';
-            let five : char = '5';
-            let six : char = '6';
-            let seven : char = '7';
-            let eight : char = '8';
-            let nine : char = '9';
+            struct Number {
+                zero : char,
+                one : char,
+                two : char,
+                three : char,
+                four : char,
+                five : char,
+                six : char,
+                seven : char,
+                eight : char,
+                nine : char,
+            }
+
+            let number = Number {
+                zero : '0',
+                one : '1',
+                two : '2',
+                three : '3',
+                four : '4',
+                five : '5',
+                six : '6',
+                seven : '7',
+                eight : '8',
+                nine : '9',
+            };
+
 
             //Operators
-            let dot : char = '.';
-            let modd : char = '%';
-            let add : char = '+';
-            let sub : char = '-';
-            let mult : char = '*';
-            let div : char = '/';
-            
-            //Other
-            let lparen : char = '(';
-            let rparen : char = ')';
+            struct Operator {
+                dot : char,
+                modd : char,
+                add : char,
+                sub : char,
+                mult : char,
+                div : char,
+                lparen : char,
+                rparen : char,
+            }
+
+            let operator = Operator {
+                dot : '.',
+                modd : '%',
+                add : '+',
+                sub : '-',
+                mult : '*',
+                div : '/',
+                lparen : '(',
+                rparen : ')',
+            };
+
 
             //Make it so two operations in a row don't make it crash (match case?)
                 //check by index, i.e. display[-1]? if last character an operator, then do nothing
@@ -153,19 +181,19 @@ impl eframe::App for Calculator {
 
             ui.horizontal(|ui| {   
                 if ui.add_sized([66.,40.], egui::Button::new("(")).clicked() {
-                    display.push(lparen);
+                    display.push(operator.lparen);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new(")")).clicked() {
-                    display.push(rparen);
+                    display.push(operator.rparen);
                 }         
                 if ui.add_sized([66.,40.], egui::Button::new("%")).clicked() {
                     display.push(' ');
-                    display.push(modd);
+                    display.push(operator.modd);
                     display.push(' ');
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("/")).clicked() {
                     display.push(' ');
-                    display.push(div);
+                    display.push(operator.div);
                     display.push(' ');
                 }
                 
@@ -173,51 +201,51 @@ impl eframe::App for Calculator {
 
             ui.horizontal(|ui| {
                 if ui.add_sized([66.,40.], egui::Button::new("7")).clicked() { 
-                    display.push(seven);
+                    display.push(number.seven);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("8")).clicked() { 
-                    display.push(eight);
+                    display.push(number.eight);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("9")).clicked() { 
-                    display.push(nine);
+                    display.push(number.nine);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("*")).clicked() {
                     display.push(' ');
-                    display.push(mult);
+                    display.push(operator.mult);
                     display.push(' ');
                 }
             });
 
             ui.horizontal(|ui| {
                 if ui.add_sized([66.,40.], egui::Button::new("4")).clicked() { 
-                    display.push(four);
+                    display.push(number.four);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("5")).clicked() { 
-                    display.push(five);
+                    display.push(number.five);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("6")).clicked() { 
-                    display.push(six);
+                    display.push(number.six);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("-")).clicked() {
                     display.push(' ');
-                    display.push(sub);
+                    display.push(operator.sub);
                     display.push(' ');
                 }
             });
 
             ui.horizontal(|ui| {
                 if ui.add_sized([66.,40.], egui::Button::new("1")).clicked() { 
-                    display.push(one);
+                    display.push(number.one);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("2")).clicked() { 
-                    display.push(two);
+                    display.push(number.two);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("3")).clicked() { 
-                    display.push(three);
+                    display.push(number.three);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("+")).clicked() {
                     display.push(' ');
-                    display.push(add);
+                    display.push(operator.add);
                     display.push(' ');
                 }  
             });
@@ -225,11 +253,11 @@ impl eframe::App for Calculator {
         use eval::{eval, to_value};
         ui.horizontal(|ui|{  
             if ui.add_sized([140.,40.], egui::Button::new("0")).clicked(){
-                display.push(zero);
+                display.push(number.zero);
             }
             
             if ui.add_sized([66.,40.], egui::Button::new(".")).clicked(){
-                display.push(dot);
+                display.push(operator.dot);
             }
 
             if ui.add_sized([66.,40.], egui::Button::new("=")).clicked() {
