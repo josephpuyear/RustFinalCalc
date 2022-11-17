@@ -16,8 +16,8 @@ There is a backspace and a clear button if mistakes are made while typing.
 Things that will make it crash:
 1. Dividing by 0
 2. Clicking = with only an operator in the display
-3. Clicking = with two operators next to each other 
-    [This includes decimals and parentheses] 
-    [Sometimes decimals or . can be put next to parentheses, as long as a number is the next character, such as (.5) ] 
-    [Expressions can also be put next to each other, such as (1 + 2)(1 + 2), so long as both are in paranthesis]
+3. Clicking = with two operators next to each other
+    - [This includes decimals and parentheses]
+    - [Sometimes decimals or . can be put next to parentheses, as long as a number is the next character, such as (.5) ] 
+    - [Expressions **cannot** be put next to each other, such as (1 + 2)(1 + 2), as the evaluator gets confused and the math will be incorrect]
 4. Clicking = with a number next to a parenthese without another operator between
