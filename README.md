@@ -28,7 +28,7 @@ There are also many ways of styling widgets, but there are almost too many diffe
 
 My explaination video will also go into a few more specifics about how the code works, although I must say some of it certainly seems like magic to me. The eframe framework makes it incredibly easy to compile this program to Web-Assembly and run inside the web browser, so the specific details of that are still somewhat of a mystery to me. 
 
-That video can be found here: *video not yet made*
+That video can be found here: https://youtu.be/_xi7IcYNiU0
 
 # Ongoing issues:
 

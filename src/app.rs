@@ -94,9 +94,8 @@ impl eframe::App for Calculator {
         });
 
 
-    // Adds a "Central Panel" to the gui, which is where everything is located for the calculator
-        //#[cfg(target_arch = "wasm32")]
-        //egui::CentralPanel::default().show(ctx, |ui| {    
+    // Adds a "Window" to the page. Each window can have its own widgets/functions
+        //#[cfg(target_arch = "wasm32")] 
         egui::Window::new("Rust Calculator").resizable(false).default_pos(egui::pos2(355.0, 0.0)).show(ctx, |ui| {         
         
 
@@ -157,7 +156,9 @@ impl eframe::App for Calculator {
             let response = ui.text_edit_singleline(display);
             if response.lost_focus() && ui.input().key_pressed(egui::Key::Enter){
                 let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
+                *equation = display.clone().to_string();
                 *display = result.to_string();
+                *label = result.to_string();
             }
 
 
@@ -470,18 +471,6 @@ impl eframe::App for Calculator {
 
         
 
-            //egui::warn_if_debug_build(ui);
-    });
-    /*
-        if false {
-            egui::Window::new("Window").show(ctx, |ui| {
-                ui.label("Windows can be moved by dragging them.");
-                ui.label("They are automatically sized based on contents.");
-                ui.label("You can turn on resizing and scrolling if you like.");
-                ui.label("You would normally chose either panels OR windows.");
-            });
-            
-        }
-    */
+        });
     }
 }
