@@ -29,7 +29,7 @@ fn main() {
 
     let web_options = eframe::WebOptions::default();
     eframe::start_web(
-        "rust_calculator", // hardcode it
+        "the_canvas_id", // hardcode it
         web_options,
         Box::new(|cc| Box::new(rust_FinalProject::Calculator::new(cc))),
     )

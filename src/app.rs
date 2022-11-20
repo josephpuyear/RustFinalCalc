@@ -6,6 +6,7 @@ pub struct Calculator {
 // Variables used
     label: String,                          // This is used for testing
     display: String,
+    equation: String,
 }
 
 
@@ -14,6 +15,7 @@ impl Default for Calculator {
         Self {
             label: "".to_owned(),           // This is used for testing
             display: "".to_owned(),
+            equation: "".to_owned(),
         }
     }
 }
@@ -55,7 +57,7 @@ impl eframe::App for Calculator {
     /// Called each time the UI needs repainting, which may be many times per second.
     /// Put the widgets into a `SidePanel`, `TopsPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
-        let Self { label, display } = self;
+        let Self { label, display, equation} = self;
 
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
 
@@ -74,12 +76,21 @@ impl eframe::App for Calculator {
 
 
         egui::Window::new("Hello and welcome!").resizable(false).default_pos(egui::pos2(0.0, 0.0)).show(ctx, |ui| {
+            ui.set_width(288.0);
             ui.label("Hello! My name is Joseph Puyear and this is my calculator that I created using Rust and the egui framework. You can click and drag the windows to move them or you can collapse them at any time by clicking the arrow on the top left of each frame. Please feel free to give this calculator a test drive but know that there are still many bugs that need to be fixed. Hope you enjoy playing around with my Rust Calculator!");
         });
 
 
-        egui::Window::new("GitHub Link").resizable(false).default_pos(egui::pos2(0.0, 160.0)).show(ctx, |ui| {
+        egui::Window::new("GitHub Link").resizable(false).default_pos(egui::pos2(0.0, 170.0)).show(ctx, |ui| {
+            ui.set_width(288.0);
             ui.hyperlink("https://github.com/josephpuyear/RustFinalCalc");
+        });
+
+        egui::Window::new("Hints").resizable(false).default_pos(egui::pos2(0.0, 250.0)).show(ctx, |ui| {
+            ui.set_width(288.0);
+            ui.label("Double click 'Clear' to clear all displays");
+            ui.label("Click the drop down window to see the previous input and result");
+            ui.label("You can type in the display and press enter to get the result")
         });
 
 
@@ -140,12 +151,11 @@ impl eframe::App for Calculator {
                 rparen : ')',
             };
 
-    
-            ui.label("");
+            
 
     // This allows the user to press "Enter", rather than click "=" to get a result
             let response = ui.text_edit_singleline(display);
-            if response.lost_focus() && ui.input().key_pressed(egui::Key::Enter) {
+            if response.lost_focus() && ui.input().key_pressed(egui::Key::Enter){
                 let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
                 *display = result.to_string();
             }
@@ -153,10 +163,17 @@ impl eframe::App for Calculator {
 
     // Clear and Backspace buttons        
             ui.horizontal(|ui| {
-                if ui.add_sized([140.,40.], egui::Button::new("Clear")).clicked() {
+                let clear = ui.add_sized([140.,40.], egui::Button::new("Clear"));
+                if clear.clicked(){
                     *display = "".to_owned();
                 }
-                if ui.add_sized([140.,40.], egui::Button::new("<---")).clicked() {
+                if clear.double_clicked(){
+                    *display = "".to_owned();
+                    *label = "".to_owned();
+                    *equation = "".to_owned();
+                }
+                let delete = ui.add_sized([140.,40.], egui::Button::new("<---"));
+                if delete.clicked(){
                     display.pop();
                 }
             });
@@ -164,18 +181,18 @@ impl eframe::App for Calculator {
 
     // Parantheses, Modulo and Divide buttons
             ui.horizontal(|ui| {   
-                if ui.add_sized([66.,40.], egui::Button::new("(")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("(")).clicked(){
                     display.push(ops.lparen);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new(")")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new(")")).clicked(){
                     display.push(ops.rparen);
                 }         
-                if ui.add_sized([66.,40.], egui::Button::new("Mod")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("Mod")).clicked(){
                     display.push(' ');
                     display.push(ops.modd);
                     display.push(' ');
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("/")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("/")).clicked(){
                     display.push(' ');
                     display.push(ops.div);
                     display.push(' ');
@@ -186,16 +203,16 @@ impl eframe::App for Calculator {
     
     // Seven, Eight, Nine, Multiply buttons
             ui.horizontal(|ui| {
-                if ui.add_sized([66.,40.], egui::Button::new("7")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("7")).clicked(){ 
                     display.push(nums.seven);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("8")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("8")).clicked(){ 
                     display.push(nums.eight);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("9")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("9")).clicked(){ 
                     display.push(nums.nine);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("*")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("*")).clicked(){
                     display.push(' ');
                     display.push(ops.mult);
                     display.push(' ');
@@ -205,16 +222,16 @@ impl eframe::App for Calculator {
 
     // Four, Five, Six, Subtract buttons
             ui.horizontal(|ui| {
-                if ui.add_sized([66.,40.], egui::Button::new("4")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("4")).clicked(){ 
                     display.push(nums.four);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("5")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("5")).clicked(){ 
                     display.push(nums.five);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("6")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("6")).clicked(){ 
                     display.push(nums.six);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("-")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("-")).clicked(){
                     display.push(' ');
                     display.push(ops.sub);
                     display.push(' ');
@@ -224,16 +241,16 @@ impl eframe::App for Calculator {
             
     // One, Two, Three, Add buttons
             ui.horizontal(|ui| {
-                if ui.add_sized([66.,40.], egui::Button::new("1")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("1")).clicked(){ 
                     display.push(nums.one);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("2")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("2")).clicked(){ 
                     display.push(nums.two);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("3")).clicked() { 
+                if ui.add_sized([66.,40.], egui::Button::new("3")).clicked(){ 
                     display.push(nums.three);
                 }
-                if ui.add_sized([66.,40.], egui::Button::new("+")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("+")).clicked(){
                     display.push(' ');
                     display.push(ops.add);
                     display.push(' ');
@@ -244,15 +261,15 @@ impl eframe::App for Calculator {
     // Zero, Decimal and Equals buttons
             use eval::{eval, to_value};
             ui.horizontal(|ui|{  
-                if ui.add_sized([140.,40.], egui::Button::new("0")).clicked() {
+                if ui.add_sized([140.,40.], egui::Button::new("0")).clicked(){
                     display.push(nums.zero);
                 }
                 
-                if ui.add_sized([66.,40.], egui::Button::new(".")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new(".")).clicked(){
                     display.push(ops.dot);
                 }
 
-                if ui.add_sized([66.,40.], egui::Button::new("=")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("=")).clicked(){
                     if *display == ops.dot.to_string(){
                         *display = "".to_owned();
                     }
@@ -274,12 +291,30 @@ impl eframe::App for Calculator {
                     if *display == " " || *display == "" {
                         *display = "".to_owned();
                     }
+                    
                     else {
                     let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
+                    *equation = display.clone().to_string();
                     *display = result.to_string();
+                    *label = result.to_string();
+                    
                     }
                 }
-        
+            });
+            ui.collapsing("Previous Inputs/Results", |ui| {
+                ui.horizontal(|ui|{
+                    ui.set_width(270.0);
+                    ui.label("Last input: ");
+                    ui.text_edit_singleline(equation);
+                });
+    
+                ui.horizontal(|ui|{
+                    ui.set_width(270.0);
+                    ui.label("Last result:");
+                    ui.text_edit_singleline(label);
+                });
+            });
+            
 
     // Corrects multiple opss and divide by zero 
             if display.contains(" / 0") {
@@ -433,7 +468,7 @@ impl eframe::App for Calculator {
     // me telling it what I'm looking for. Feedback on how I might be able to do this would
     // be very much appreciated. 
 
-        });
+        
 
             //egui::warn_if_debug_build(ui);
     });
