@@ -13,7 +13,7 @@ Users can click buttons or type directly in the display bar.
 
 There is a backspace and a clear button if mistakes are made while typing. 
 
-Things that will make it crash:
+Ongoing issues:
 1. A few operators being put next to each other will make it crash. For example:
 - A decimal between any two other operators.
 - A single paranthase (or multiple) between any other operators without numbers.

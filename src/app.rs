@@ -8,6 +8,7 @@ pub struct Calculator {
     display: String,
 }
 
+
 impl Default for Calculator {
     fn default() -> Self {
         Self {
@@ -16,6 +17,7 @@ impl Default for Calculator {
         }
     }
 }
+
 
 impl Calculator {
     /// Called once before the first frame.
@@ -57,8 +59,9 @@ impl eframe::App for Calculator {
 
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
 
+
     // Tops panel allows for a menu bar
-        egui::TopsBottomPanel::tops("tops_panel").show(ctx, |ui| {
+        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
@@ -70,14 +73,21 @@ impl eframe::App for Calculator {
         });
 
 
+        egui::Window::new("Hello and welcome!").resizable(false).default_pos(egui::pos2(0.0, 0.0)).show(ctx, |ui| {
+            ui.label("Hello! My name is Joseph Puyear and this is my calculator that I created using Rust and the egui framework. You can click and drag the windows to move them or you can collapse them at any time by clicking the arrow on the top left of each frame. Please feel free to give this calculator a test drive but know that there are still many bugs that need to be fixed. Hope you enjoy playing around with my Rust Calculator!");
+        });
+
+
+        egui::Window::new("GitHub Link").resizable(false).default_pos(egui::pos2(0.0, 160.0)).show(ctx, |ui| {
+            ui.hyperlink("https://github.com/josephpuyear/RustFinalCalc");
+        });
+
+
     // Adds a "Central Panel" to the gui, which is where everything is located for the calculator
         //#[cfg(target_arch = "wasm32")]
         //egui::CentralPanel::default().show(ctx, |ui| {    
-        egui::Window::new("Rust Calculator").resizable(false).default_pos(egui::pos2(800.0, 200.0)).show(ctx, |ui| {         
+        egui::Window::new("Rust Calculator").resizable(false).default_pos(egui::pos2(355.0, 0.0)).show(ctx, |ui| {         
         
-        
-        
-        //ctx.set_style(egui::Style::window_padding([66.,0.]));
 
     // Numbers
             struct Number {
@@ -130,20 +140,8 @@ impl eframe::App for Calculator {
                 rparen : ')',
             };
 
-
-            // Resize buttons
-            // Change colors
-
-            use std::any::type_name;
-            fn type_of<T>(_: T) -> &'static str {
-                type_name::<T>()
-            }
-
-
-    // Header at the tops of the gui
-            ui.label("Drag to move!");
-            ui.label("Written by Joseph Puyear using egui");
-
+    
+            ui.label("");
 
     // This allows the user to press "Enter", rather than click "=" to get a result
             let response = ui.text_edit_singleline(display);
@@ -415,7 +413,20 @@ impl eframe::App for Calculator {
             if display.contains("%  /"){
                 *display = display.clone().replace("%  /", "%");
             }
+    
 
+    // Parantheses corrections
+            if display.contains("()"){
+                *display = display.clone().replace("()", "(");
+            }
+
+            if display.contains(")("){
+                *display = display.clone().replace(")(", ")");
+            }
+
+            if display.contains(").("){
+                *display = display.clone().replace(").(", ")");
+            }
 
     // Obviously this is a ridiculous amount of if-statements. I wanted to do a match case
     // but it got confusing since match can't know what's inside of display.contains() without
