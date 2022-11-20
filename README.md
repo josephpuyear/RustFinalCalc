@@ -13,11 +13,9 @@ Users can click buttons or type directly in the display bar.
 
 There is a backspace and a clear button if mistakes are made while typing. 
 
-Things that will make it crash:
-1. Dividing by 0
-2. Clicking = with only an operator in the display
-3. Clicking = with two operators next to each other 
-    [This includes decimals and parentheses] 
-    [Sometimes decimals or . can be put next to parentheses, as long as a number is the next character, such as (.5) ] 
-    [Expressions can also be put next to each other, such as (1 + 2)(1 + 2), so long as both are in paranthesis]
-4. Clicking = with a number next to a parenthese without another operator between
+Ongoing Issues: 
+1. A few operators being put next to each other will make it crash. For example:
+- A decimal between any two other operators.
+- A single paranthase (or multiple) between any other operators without numbers.
+- A few other edge cases that I won't list here. 
+2. Overflow is an issue. Multiplying very large numbers with each other will cause the integers to get confused and end up at negative numbers. Not incredibly realistic to fix however, considering that the numbers have to be quite large. Doesn't crash though which I guess is a plus?

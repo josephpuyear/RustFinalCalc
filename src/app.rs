@@ -3,19 +3,15 @@
 #[serde(default)] // if we add new fields, give them default values when deserializing old state
 
 pub struct Calculator {
-    // Example stuff:
-    label: String,
-
-    // this how you opt-out of serialization of a member
-    //#[serde(skip)]
-
+// Variables used
+    label: String,                          // This is used for testing
     display: String,
 }
 
 impl Default for Calculator {
     fn default() -> Self {
         Self {
-            label: "".to_owned(),
+            label: "".to_owned(),           // This is used for testing
             display: "".to_owned(),
         }
     }
@@ -24,54 +20,66 @@ impl Default for Calculator {
 impl Calculator {
     /// Called once before the first frame.
     pub fn new(cc: &eframe::CreationContext<'_>) -> Self {
-        // This is also where you can customized the look at feel of egui using
-        // `cc.egui_ctx.set_visuals` and `cc.egui_ctx.set_fonts`.
+        // This is also where you can customized the look and feel of the gui
 
-        // Load previous app state (if any).
-        // Note that you must enable the `persistence` feature for this to work.
+        // Sets gui to dark mode
+        cc.egui_ctx.set_visuals(egui::Visuals::dark());
+
+
+    // Load previous app state (if any) 
+    // Disabled for now because I found it annoying during testing
+        /* 
         if let Some(storage) = cc.storage {
             return eframe::get_value(storage, eframe::APP_KEY).unwrap_or_default();
         }
+
+        */
 
         Default::default()
     }
 }
 
+
+// Creates a new App Calculator
 impl eframe::App for Calculator {
-    /// Called by the frame work to save state before shutdown.
+
+
+    // Called by the frame work to save state before shutdown.
     fn save(&mut self, storage: &mut dyn eframe::Storage) {
         eframe::set_value(storage, eframe::APP_KEY, self);
     }
 
+
     /// Called each time the UI needs repainting, which may be many times per second.
-    /// Put your widgets into a `SidePanel`, `TopPanel`, `CentralPanel`, `Window` or `Area`.
+    /// Put the widgets into a `SidePanel`, `TopsPanel`, `CentralPanel`, `Window` or `Area`.
     fn update(&mut self, ctx: &egui::Context, _frame: &mut eframe::Frame) {
         let Self { label, display } = self;
 
-        // Examples of how to create different panels and windows.
-        // Pick whichever suits you.
-        // Tip: a good default choice is to just keep the `CentralPanel`.
-        // For inspiration and more examples, go to https://emilk.github.io/egui
-
         #[cfg(not(target_arch = "wasm32"))] // no File->Quit on web pages!
-        egui::TopBottomPanel::top("top_panel").show(ctx, |ui| {
-            // The top panel is often a good place for a menu bar:
+
+    // Tops panel allows for a menu bar
+        egui::TopsBottomPanel::tops("tops_panel").show(ctx, |ui| {
             egui::menu::bar(ui, |ui| {
                 ui.menu_button("File", |ui| {
                     if ui.button("Quit").clicked() {
-                        *display = " ".to_owned();
+                        *display = "".to_owned();
                         _frame.close();
                     }
-                }); 
+                });
             });
         });
+
+
+    // Adds a "Central Panel" to the gui, which is where everything is located for the calculator
+        //#[cfg(target_arch = "wasm32")]
+        //egui::CentralPanel::default().show(ctx, |ui| {    
+        egui::Window::new("Rust Calculator").resizable(false).default_pos(egui::pos2(800.0, 200.0)).show(ctx, |ui| {         
         
         
+        
+        //ctx.set_style(egui::Style::window_padding([66.,0.]));
 
-        egui::CentralPanel::default().show(ctx, |ui| {
-            // The central panel the region left after adding TopPanel's and SidePanel's
-
-            //Numbers
+    // Numbers
             struct Number {
                 zero : char,
                 one : char,
@@ -85,7 +93,7 @@ impl eframe::App for Calculator {
                 nine : char,
             }
 
-            let number = Number {
+            let nums = Number {
                 zero : '0',
                 one : '1',
                 two : '2',
@@ -99,7 +107,7 @@ impl eframe::App for Calculator {
             };
 
 
-            //Operators
+    // Operators
             struct Operator {
                 dot : char,
                 modd : char,
@@ -111,7 +119,7 @@ impl eframe::App for Calculator {
                 rparen : char,
             }
 
-            let operator = Operator {
+            let ops = Operator {
                 dot : '.',
                 modd : '%',
                 add : '+',
@@ -123,145 +131,302 @@ impl eframe::App for Calculator {
             };
 
 
-            //Make it so two operations in a row don't make it crash (match case?)
-                //check by index, i.e. display[-1]? if last character an operator, then do nothing
-            //Do not allow / by 0
-            //Resize buttons
-            //Change colors
-            
-        
-            /* 
-            
-            let x = 1;
-
-            if display.chars().nth(x).unwrap() == add{
-                let temp_display = display.clone();
-                *display = "Please only type one operator at a time!".to_owned();
-                thread::sleep(ten_mills);
-                *display = temp_display.to_string();
-
-            */
-
-            use std::{thread, time};
-            let ten_mills = time::Duration::from_millis(100);
+            // Resize buttons
+            // Change colors
 
             use std::any::type_name;
             fn type_of<T>(_: T) -> &'static str {
                 type_name::<T>()
             }
 
-            let v : Vec<char> = display.chars().collect();
-            
-            ui.heading("Rust Calculator");
-            ui.horizontal(|ui| {
-                ui.label("Written by Joseph Puyear");
-            });
 
+    // Header at the tops of the gui
+            ui.label("Drag to move!");
+            ui.label("Written by Joseph Puyear using egui");
+
+
+    // This allows the user to press "Enter", rather than click "=" to get a result
             let response = ui.text_edit_singleline(display);
             if response.lost_focus() && ui.input().key_pressed(egui::Key::Enter) {
                 let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
                 *display = result.to_string();
             }
 
+
+    // Clear and Backspace buttons        
             ui.horizontal(|ui| {
                 if ui.add_sized([140.,40.], egui::Button::new("Clear")).clicked() {
-                    *display = " ".to_owned();
+                    *display = "".to_owned();
                 }
-                if ui.add_sized([140.,40.], egui::Button::new("<-")).clicked() {
+                if ui.add_sized([140.,40.], egui::Button::new("<---")).clicked() {
                     display.pop();
                 }
             });
 
+
+    // Parantheses, Modulo and Divide buttons
             ui.horizontal(|ui| {   
                 if ui.add_sized([66.,40.], egui::Button::new("(")).clicked() {
-                    display.push(operator.lparen);
+                    display.push(ops.lparen);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new(")")).clicked() {
-                    display.push(operator.rparen);
+                    display.push(ops.rparen);
                 }         
-                if ui.add_sized([66.,40.], egui::Button::new("%")).clicked() {
+                if ui.add_sized([66.,40.], egui::Button::new("Mod")).clicked() {
                     display.push(' ');
-                    display.push(operator.modd);
+                    display.push(ops.modd);
                     display.push(' ');
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("/")).clicked() {
                     display.push(' ');
-                    display.push(operator.div);
+                    display.push(ops.div);
                     display.push(' ');
                 }
                 
             });
 
+    
+    // Seven, Eight, Nine, Multiply buttons
             ui.horizontal(|ui| {
                 if ui.add_sized([66.,40.], egui::Button::new("7")).clicked() { 
-                    display.push(number.seven);
+                    display.push(nums.seven);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("8")).clicked() { 
-                    display.push(number.eight);
+                    display.push(nums.eight);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("9")).clicked() { 
-                    display.push(number.nine);
+                    display.push(nums.nine);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("*")).clicked() {
                     display.push(' ');
-                    display.push(operator.mult);
+                    display.push(ops.mult);
                     display.push(' ');
                 }
             });
 
+
+    // Four, Five, Six, Subtract buttons
             ui.horizontal(|ui| {
                 if ui.add_sized([66.,40.], egui::Button::new("4")).clicked() { 
-                    display.push(number.four);
+                    display.push(nums.four);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("5")).clicked() { 
-                    display.push(number.five);
+                    display.push(nums.five);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("6")).clicked() { 
-                    display.push(number.six);
+                    display.push(nums.six);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("-")).clicked() {
                     display.push(' ');
-                    display.push(operator.sub);
+                    display.push(ops.sub);
                     display.push(' ');
                 }
             });
 
+            
+    // One, Two, Three, Add buttons
             ui.horizontal(|ui| {
                 if ui.add_sized([66.,40.], egui::Button::new("1")).clicked() { 
-                    display.push(number.one);
+                    display.push(nums.one);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("2")).clicked() { 
-                    display.push(number.two);
+                    display.push(nums.two);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("3")).clicked() { 
-                    display.push(number.three);
+                    display.push(nums.three);
                 }
                 if ui.add_sized([66.,40.], egui::Button::new("+")).clicked() {
                     display.push(' ');
-                    display.push(operator.add);
+                    display.push(ops.add);
                     display.push(' ');
                 }
             });
 
-        use eval::{eval, to_value};
-        ui.horizontal(|ui|{  
-            if ui.add_sized([140.,40.], egui::Button::new("0")).clicked(){
-                display.push(number.zero);
+
+    // Zero, Decimal and Equals buttons
+            use eval::{eval, to_value};
+            ui.horizontal(|ui|{  
+                if ui.add_sized([140.,40.], egui::Button::new("0")).clicked() {
+                    display.push(nums.zero);
+                }
+                
+                if ui.add_sized([66.,40.], egui::Button::new(".")).clicked() {
+                    display.push(ops.dot);
+                }
+
+                if ui.add_sized([66.,40.], egui::Button::new("=")).clicked() {
+                    if *display == ops.dot.to_string(){
+                        *display = "".to_owned();
+                    }
+                    if *display == " + "{
+                        *display = "".to_owned();
+                    }
+                    if *display == " - "{
+                        *display = "".to_owned();
+                    }
+                    if *display == " * "{
+                        *display = "".to_owned();
+                    }
+                    if *display == " / "{
+                        *display = "".to_owned();
+                    }
+                    if *display == " % "{
+                        *display = "".to_owned();
+                    }
+                    if *display == " " || *display == "" {
+                        *display = "".to_owned();
+                    }
+                    else {
+                    let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
+                    *display = result.to_string();
+                    }
+                }
+        
+
+    // Corrects multiple opss and divide by zero 
+            if display.contains(" / 0") {
+                *display = display.clone().replace(" / 0", "");
+            }
+
+            if display.contains("/ 0") {
+                *display = display.clone().replace("/ 0", "");
             }
             
-            if ui.add_sized([66.,40.], egui::Button::new(".")).clicked(){
-                display.push(operator.dot);
+
+    // Additions corrections
+            if display.contains("+  +"){
+                *display = display.clone().replace("+  +", "+");
+            }
+            
+            if display.contains("+  -"){
+                *display = display.clone().replace("+  -", "+");
             }
 
-            if ui.add_sized([66.,40.], egui::Button::new("=")).clicked() {
-                let mut result = eval::eval(&*display).unwrap().as_f64().unwrap();
-                *display = result.to_string();
+            if display.contains("+  *"){
+                *display = display.clone().replace("+  *", "+");
             }
+
+            if display.contains("+  /"){
+                *display = display.clone().replace("+  /", "+");
+            }
+
+            if display.contains("+  %"){
+                *display = display.clone().replace("+  %", "+");
+            }
+
+
+    // Subtraction corrections
+            if display.contains("-  -"){
+                *display = display.clone().replace("-  -", "-");
+            }
+    
+            if display.contains("-  +"){
+                *display = display.clone().replace("-  +", "-");
+            }
+            
+            if display.contains("-  *"){
+                *display = display.clone().replace("-  *", "-");
+            }
+
+            if display.contains("-  /"){
+                *display = display.clone().replace("-  /", "-");
+            }
+
+            if display.contains("-  %"){
+                *display = display.clone().replace("-  %", "-");
+            }
+
+
+    // Multiplication corrections
+            if display.contains("*  *"){
+                *display = display.clone().replace("*  *", "*");
+            }
+
+            if display.contains("*  +"){
+                *display = display.clone().replace("*  +", "*");
+            }
+
+            if display.contains("*  -"){
+                *display = display.clone().replace("*  -", "*");
+            }
+
+            if display.contains("*  /"){
+                *display = display.clone().replace("*  /", "*");
+            }
+
+            if display.contains("*  %"){
+                *display = display.clone().replace("*  %", "*");
+            }
+
+
+    // Division corrections 
+            if display.contains("/  /"){
+                *display = display.clone().replace("/  /", "/");
+            }
+
+            if display.contains("/  +"){
+                *display = display.clone().replace("/  +", "/");
+            }
+
+            if display.contains("/  -"){
+                *display = display.clone().replace("/  -", "/");
+            }
+
+            if display.contains("/  *"){
+                *display = display.clone().replace("/  *", "/");
+            }
+
+            if display.contains("/  %"){
+                *display = display.clone().replace("/  %", "/");
+            }
+
+
+    // Decimal correction
+            if display.contains(".."){
+                *display = display.clone().replace("..", ".");
+            }
+
+            if display.contains(" . "){
+                *display = display.clone().replace(" . ", ".");
+            }
+
+            if display.contains("(.)"){
+                *display = display.clone().replace("(.)", ".");
+            }
+
+
+    // Modulo corrections        
+            if display.contains("%  %"){
+                *display = display.clone().replace("%  %", "%");
+            }
+
+            if display.contains("%  +"){
+                *display = display.clone().replace("%  +", "%");
+            }
+
+            if display.contains("%  -"){
+                *display = display.clone().replace("%  -", "%");
+            }
+
+            if display.contains("%  *"){
+                *display = display.clone().replace("%  *", "%");
+            }
+
+            if display.contains("%  /"){
+                *display = display.clone().replace("%  /", "%");
+            }
+
+
+    // Obviously this is a ridiculous amount of if-statements. I wanted to do a match case
+    // but it got confusing since match can't know what's inside of display.contains() without
+    // me telling it what I'm looking for. Feedback on how I might be able to do this would
+    // be very much appreciated. 
+
         });
 
-            egui::warn_if_debug_build(ui);
-        });
-
+            //egui::warn_if_debug_build(ui);
+    });
+    /*
         if false {
             egui::Window::new("Window").show(ctx, |ui| {
                 ui.label("Windows can be moved by dragging them.");
@@ -269,6 +434,8 @@ impl eframe::App for Calculator {
                 ui.label("You can turn on resizing and scrolling if you like.");
                 ui.label("You would normally chose either panels OR windows.");
             });
+            
         }
+    */
     }
 }
